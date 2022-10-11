@@ -3,11 +3,11 @@ const Schema = mongoose.Schema;
 
 const UserSchema = new Schema(
   {
-    first_name: {
+    firstName: {
       type: String,
       required: true,
     },
-    last_name: {
+    lastName: {
       type: String,
       required: true,
     },
@@ -24,9 +24,9 @@ const UserSchema = new Schema(
   { timestamps: true },
 );
 
-UserSchema.virtual('user_name').get(
+UserSchema.virtual('username').get(
   function() {
-    return `${this.first_name} ${this.last_name}`;
+    return `${this.firstName} ${this.lastName}`;
   },
 );
 

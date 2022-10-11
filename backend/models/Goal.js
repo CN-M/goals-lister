@@ -7,8 +7,12 @@ const GoalSchema = new Schema(
       type: String,
       required: true,
     },
-    user_name: {
+    username: {
       type: String,
+      required: true,
+    },
+    complete: {
+      type: Boolean,
       required: true,
     },
   },

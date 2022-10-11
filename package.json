@@ -12,8 +12,11 @@
     "mongoose": "^6.6.5"
   },
   "scripts": {
-    "server": "nodemon backend/server.js"
+    "server": "nodemon backend/server.js",
+    "client": "npm start --prefix frontend",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
   },
+  "main": "server.js",
   "devDependencies": {
     "concurrently": "^7.4.0",
     "eslint": "^8.25.0",
