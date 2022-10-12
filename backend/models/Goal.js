@@ -11,10 +11,10 @@ const GoalSchema = new Schema(
       type: String,
       required: true,
     },
-    complete: {
-      type: Boolean,
-      required: true,
-    },
+    // complete: {
+    //   type: Boolean,
+    //   required: true,
+    // },
   },
   { timestamps: true },
 );
