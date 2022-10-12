@@ -1,18 +1,24 @@
 import './App.scss';
 import Nav from './components/Nav/Nav';
-import Goals from './components/Goals/Goals';
 import Footer from './components/Footer/Footer';
+import Login from './pages/Login/Login';
+import Register from './pages/Register/Register';
+import Home from './pages/Home/Home';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
 function App() {
   return (
     <>
       <Router>
-
-        <Nav />
-          <h1>Welcome Home</h1>
-          <Goals />
-        <Footer />
+        <div className="container">
+          <Nav />
+          <Routes>
+            <Route path='/' element={<Home />} />
+            <Route path='/register' element={<Register />}/>
+            <Route path='/login' element={<Login />} />
+          </Routes>
+          <Footer />
+        </div>
       </Router>
     </>
   );
