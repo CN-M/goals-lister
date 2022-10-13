@@ -14,6 +14,7 @@ function App() {
           <Nav />
           <Routes>
             <Route path='/' element={<Home />} />
+            <Route path='/goals' redirect='/' />
             <Route path='/register' element={<Register />}/>
             <Route path='/login' element={<Login />} />
           </Routes>

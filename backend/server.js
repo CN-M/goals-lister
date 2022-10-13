@@ -16,7 +16,7 @@ const app = express();
 const Port = PORT || 5000;
 
 // Connect DB
-connectDB();
+// connectDB();
 
 // Import site routes
 const userRoute = require('./routes/userRoute');
