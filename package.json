@@ -9,7 +9,9 @@
     "helmet": "^6.0.0",
     "http-errors": "^2.0.0",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.6.5"
+    "mongoose": "^6.6.5",
+    "mysql": "^2.18.1",
+    "mysql2": "^2.3.3"
   },
   "scripts": {
     "server": "nodemon backend/server.js",

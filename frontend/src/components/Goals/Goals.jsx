@@ -15,7 +15,7 @@ const Goals = () => {
   })
     const [name, setName] = useState('');
     const [username, setUsername] = useState('');
-    const [complete, setComplete] = useState(false);
+    // const [complete, setComplete] = useState(false);
 
 
     const handleGoal = async (e) => {
@@ -24,7 +24,7 @@ const Goals = () => {
         await axios.post('/goals', {
             name,
             username,
-            complete,
+            // complete,
         });        
     }
 
@@ -33,7 +33,7 @@ const Goals = () => {
       <div className="goalList">
         <ul>
           {
-            goals.map(goal => <li key={goal.id}>{goal.name}</li>)
+            goals.map(goal => <li key={goal.id}>{goal.goal}</li>)
           }
         </ul>
       </div>
@@ -63,7 +63,7 @@ const Goals = () => {
                 <input
                     type='checkbox'
                     placeholder='Enter your email...'
-                    onChange={(e) => setComplete(e.target.value)}
+                    // onChange={(e) => setComplete(e.target.value)}
                 />
               </div>
               <button type='submit'>Add Goal</button>
