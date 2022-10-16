@@ -12,7 +12,7 @@ const { JWT_SECRET } = process.env;
 const generateToken = (id) => jwt.sign({ id }, JWT_SECRET, { expiresIn: '60d' });
 
 // Register user // POST
-exports.registerUser = async (req, res) => {
+exports.registerUser = (req, res) => {
   const {
     first_name, last_name, email, password,
   } = req.body;
@@ -24,22 +24,23 @@ exports.registerUser = async (req, res) => {
   }
 
   // Check if email already has account
-  //   const userExists = await User.findOne({ email });
-  //   if (userExists) {
-  //     res.status(400);
-  //     throw new Error('Email already registered');
-  //   }
-
-  // Hash password and create user account
-  const hashedPassword = await bcrypt.hash(password, 10);
   db.query(
-    `
-    INSERT INTO users (first_name, last_name, email, password)
-    VALUES ('${first_name}', '${last_name}', '${email}', '${hashedPassword}')
-    `,
-    (err, data, fields) => {
+    'SELECT * FROM users WHERE email = ?',
+    [email],
+    (err, data) => {
       if (err) { res.status(400).json(err); }
-      return res.status(200).json(fields);
+      if (data.length > 0) return res.status(400).json('Email already registered');
+
+      // Hash password and create user account
+      const hashedPassword = bcrypt.hash(password, 10);
+      db.query(
+        'INSERT INTO users (first_name, last_name, email, password) VALUES (?, ?, ?, ?)',
+        [first_name, last_name, email, hashedPassword],
+        (err, data) => {
+          if (err) { res.status(400).json(err); }
+          return res.status(200).json(data);
+        },
+      );
     },
   );
   //   const user = await User.create({
@@ -73,16 +74,32 @@ exports.loginUser = async (req, res) => {
   }
 
   // Log user in
-  const user = await User.findOne({ email });
-  if (user && (await bcrypt.compare(password, user.password))) {
-    res.status(201).json({
-      first_name: user.first_name,
-      last_name: user.last_name,
-      email: user.email,
-      token: generateToken(user._id),
-    });
-  } else {
-    res.status(400);
-    throw new Error('Invalid credentials');
-  }
+  db.query(
+    'SELECT email, password FROM users WHERE email = ?',
+    [email],
+    (err, data) => {
+      if (err) { res.status(400).json(err); }
+      return res.status(200).json({
+        first_name: data.first_name,
+        last_name: data.last_name,
+        email: data.email,
+      });
+      // if (data.length > 0) {
+      //   res.status(400).json('Email already registered');
+      // }
+    },
+  );
+
+  // const user = await User.findOne({ email });
+  // if (user && (await bcrypt.compare(password, user.password))) {
+  //   res.status(201).json({
+  //     first_name: user.first_name,
+  //     last_name: user.last_name,
+  //     email: user.email,
+  //     token: generateToken(user._id),
+  //   });
+  // } else {
+  //   res.status(400);
+  //   throw new Error('Invalid credentials');
+  // }
 };

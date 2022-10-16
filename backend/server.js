@@ -9,7 +9,8 @@ require('express-async-errors');
 // Imporatant dependencies
 const { PORT, NODE_ENV } = process.env;
 const { errorHandler } = require('./middleware/errorMiddleware');
-const { connectDB } = require('./config/mongoDB');
+// const { connectDB } = require('./config/mongoDB');
+// const { connectDB } = require('./config/mysqlDB');
 
 // Initiate Express App
 const app = express();

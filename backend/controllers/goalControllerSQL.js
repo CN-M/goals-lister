@@ -2,31 +2,38 @@
 const db = require('../config/mysqlDB');
 
 // Display all goals // GET
-exports.showGoals = (req, res) => {
-  db.query(
-    `
-    SELECT * 
-    FROM goals
-    `,
-    (err, goals) => {
-      if (err) { res.status(400).json(err); }
-      return res.status(200).json(goals);
-    },
-  );
+// exports.showGoals = (req, res) => {
+//   db.execute(
+//     'SELECT * FROM goals',
+//     (err, goals) => {
+//       if (err) { res.status(400).json(err); }
+//       return res.status(200).json(goals);
+//     },
+//   );
+// };
+
+exports.showGoals = async (req, res) => {
+// db.execute(
+//   'SELECT * FROM goals',
+//   (err, goals) => {
+//     if (err) { res.status(400).json(err); }
+//     return res.status(200).json(goals);
+//   },
+// );
+  const goals = await db.execute('SELECT * FROM goals');
+  // if (goals.length === 0) return res.status(400).json('No goals to display');
+  return res.status(200).json(goals);
 };
 
 // Display specific goal // GET
 exports.showOneGoal = (req, res) => {
   const { id } = req.params;
-  db.query(
-    `
-    SELECT * 
-    FROM goals
-    WHERE goal_id = ${id}
-    `,
+  db.execute(
+    'SELECT * FROM goals WHERE goal_id = ?',
+    [id],
     (err, goal) => {
       if (err) { res.status(400).json(err); }
-      return res.status(200).json(goal);
+      return res.status(200).send(goal);
     },
   );
 };
@@ -40,14 +47,21 @@ exports.createGoal = (req, res) => {
     res.status(400);
     throw new Error('fill in all fields');
   } else {
-    db.query(
-      `
-        INSERT INTO goals (user_id, goal)
-        VALUES (${user_id}, '${goal}');
-        `,
-      (err, data, fields) => {
+    // Create new goal
+    db.execute(
+      'INSERT INTO goals (user_id, goal) VALUES (?, ?)',
+      [user_id, goal],
+      (err, data) => {
         if (err) { res.status(400).json(err); }
-        return res.status(200).json(data);
+      },
+    );
+
+    // Return created goal
+    db.execute(
+      'SELECT * FROM goals WHERE goal_id = LAST_INSERT_ID()',
+      (err, goal) => {
+        if (err) { res.status(400).json(err); }
+        return res.status(200).json(goal);
       },
     );
   }
@@ -57,16 +71,22 @@ exports.createGoal = (req, res) => {
 exports.updateGoal = (req, res) => {
   const { id } = req.params;
   const { goal, user_id } = req.body;
-  db.query(
-    `
-    UPDATE goals
-    SET goal = '${goal}'
-    WHERE goal_id = ${id} AND user_id = ${user_id}
-    `,
+  // Update goal
+  db.execute(
+    'UPDATE goals SET goal = ? WHERE goal_id = ? AND user_id = ?',
+    [goal, id, user_id],
     (err, data) => {
       if (err) { res.status(400).json(err); }
-      return res.status(200).json(data);
-      //   return res.status(200).json(`Goal ${goal.} deleted`);
+    },
+  );
+
+  // Return updated goal
+  db.execute(
+    'SELECT * FROM goals WHERE goal_id = ?',
+    [id],
+    (err, goal) => {
+      if (err) { res.status(400).json(err); }
+      return res.status(200).json(goal);
     },
   );
 };
@@ -74,15 +94,26 @@ exports.updateGoal = (req, res) => {
 // Delete Goal // DELETE
 exports.deleteGoal = (req, res) => {
   const { id } = req.params;
-  db.query(
-    `
-    DELETE FROM goals
-    WHERE goal_id = ${id}
-    `,
-    (err, results) => {
+
+  // Check if goal exists
+  db.execute(
+    'SELECT * FROM goals WHERE goal_id = ?',
+    [id],
+    (err, goal) => {
       if (err) { res.status(400).json(err); }
-      return res.status(200).json(results);
-    //   return res.status(200).json(`Goal ${goal.} deleted`);
+
+      // Goal does not exist
+      if (goal.length === 0) return res.status(400).json('Goal not found');
+
+      // If goal exists, delete it
+      db.execute(
+        'DELETE FROM goals WHERE goal_id = ?',
+        [id],
+        (err, data) => {
+          if (err) { res.status(400).json(err); }
+          return res.status(200).json('Goal deleted');
+        },
+      );
     },
   );
 };
