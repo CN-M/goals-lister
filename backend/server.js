@@ -9,15 +9,14 @@ require('express-async-errors');
 // Imporatant dependencies
 const { PORT, NODE_ENV } = process.env;
 const { errorHandler } = require('./middleware/errorMiddleware');
-// const { connectDB } = require('./config/mongoDB');
-// const { connectDB } = require('./config/mysqlDB');
+const { connectDB } = require('./config/mongoDB');
 
 // Initiate Express App
 const app = express();
 const Port = PORT || 5000;
 
 // Connect DB
-// connectDB();
+connectDB();
 
 // Import site routes
 const userRoute = require('./routes/userRoute');

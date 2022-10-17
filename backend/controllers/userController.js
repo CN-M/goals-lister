@@ -10,6 +10,17 @@ const { JWT_SECRET } = process.env;
 // Generate JWT
 const generateToken = (id) => jwt.sign({ id }, JWT_SECRET, { expiresIn: '60d' });
 
+// Display all users // GET // ADMIN ONLY
+exports.showUsers = async (req, res) => {
+  const users = await User.find();
+  if (users.length < 1) {
+    res.status(400);
+    throw new Error('No Goals to display');
+  } else {
+    res.status(200).json(users);
+  }
+};
+
 // Register user // POST
 exports.registerUser = async (req, res) => {
   const {
@@ -73,5 +84,18 @@ exports.loginUser = async (req, res) => {
   } else {
     res.status(400);
     throw new Error('Invalid credentials');
+  }
+};
+
+// Delete Goal // DELETE // ADMIN ONLY
+exports.deleteUser = async (req, res) => {
+  const { id } = req.params;
+  const user = await User.findById(id);
+  if (!user) {
+    res.status(400);
+    throw new Error('User not found');
+  } else {
+    res.status(200).json(`User ${user.name} deleted`);
+    await user.remove();
   }
 };

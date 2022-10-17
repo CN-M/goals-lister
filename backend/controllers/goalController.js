@@ -15,10 +15,10 @@ exports.showGoals = async (req, res) => {
 // Display specific goal // GET
 exports.showOneGoal = async (req, res) => {
   const { id } = req.params;
-  const goal = await Goal.findById(id);
-  if (goal) {
-    res.status(200).json(goal);
-  } else {
+  try {
+    const goal = await Goal.findById(id);
+    if (goal) return res.status(200).json(goal);
+  } catch (error) {
     res.status(400);
     throw new Error('Goal not found');
   }
@@ -42,13 +42,15 @@ exports.createGoal = async (req, res) => {
 exports.updateGoal = async (req, res) => {
   const { id } = req.params;
   const { name, username } = req.body;
-  const goal = await Goal.findById(id);
-  if (!goal) {
+  try {
+    const goal = await Goal.findById(id);
+    if (goal) {
+      const updatedGoal = await Goal.findByIdAndUpdate(id, { name, username }, { new: true });
+      res.status(200).json(updatedGoal);
+    }
+  } catch (error) {
     res.status(400);
     throw new Error('Goal not found');
-  } else {
-    const updatedGoal = await Goal.findByIdAndUpdate(id, { name, username }, { new: true });
-    res.status(200).json(updatedGoal);
   }
 };
 

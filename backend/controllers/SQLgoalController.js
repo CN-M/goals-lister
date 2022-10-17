@@ -2,27 +2,15 @@
 const db = require('../config/mysqlDB');
 
 // Display all goals // GET
-// exports.showGoals = (req, res) => {
-//   db.execute(
-//     'SELECT * FROM goals',
-//     (err, goals) => {
-//       if (err) { res.status(400).json(err); }
-//       return res.status(200).json(goals);
-//     },
-//   );
-// };
-
-exports.showGoals = async (req, res) => {
-// db.execute(
-//   'SELECT * FROM goals',
-//   (err, goals) => {
-//     if (err) { res.status(400).json(err); }
-//     return res.status(200).json(goals);
-//   },
-// );
-  const goals = await db.execute('SELECT * FROM goals');
-  // if (goals.length === 0) return res.status(400).json('No goals to display');
-  return res.status(200).json(goals);
+exports.showGoals = (req, res) => {
+  db.execute(
+    'SELECT * FROM goals',
+    (err, goals) => {
+      if (err) { res.status(400).json(err); }
+      if (goals.length < 1) return res.status(400).json('No goals to display');
+      return res.status(200).json(goals);
+    },
+  );
 };
 
 // Display specific goal // GET
@@ -33,6 +21,7 @@ exports.showOneGoal = (req, res) => {
     [id],
     (err, goal) => {
       if (err) { res.status(400).json(err); }
+      if (goal.length < 1) return res.status(400).json('Goal not found');
       return res.status(200).send(goal);
     },
   );
@@ -101,9 +90,7 @@ exports.deleteGoal = (req, res) => {
     [id],
     (err, goal) => {
       if (err) { res.status(400).json(err); }
-
-      // Goal does not exist
-      if (goal.length === 0) return res.status(400).json('Goal not found');
+      if (goal.length < 1) return res.status(400).json('Goal not found');
 
       // If goal exists, delete it
       db.execute(
