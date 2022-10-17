@@ -4,7 +4,7 @@ const createError = require('http-errors');
 const compression = require('compression');
 require('colors');
 require('dotenv').config();
-require('express-async-errors');
+// require('express-async-errors');
 
 // Imporatant dependencies
 const { PORT, NODE_ENV } = process.env;
