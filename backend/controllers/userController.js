@@ -15,7 +15,7 @@ exports.showUsers = async (req, res) => {
   const users = await User.find();
   if (users.length < 1) {
     res.status(400);
-    throw new Error('No Goals to display');
+    throw new Error('No Users to display');
   } else {
     res.status(200).json(users);
   }
@@ -24,37 +24,46 @@ exports.showUsers = async (req, res) => {
 // Register user // POST
 exports.registerUser = async (req, res) => {
   const {
-    firstName, lastName, email, password,
+    email, password, profile_pic,
   } = req.body;
 
+  const username = req.body.username.toLowerCase();
+
   // Check if all fields are filled out
-  if (!firstName || !lastName || !email || !password) {
+  if (!username || !email || !password) {
     res.status(400);
     throw new Error('fill in all fields');
   }
 
   // Check if email already has account
-  const userExists = await User.findOne({ email });
-  if (userExists) {
+  const emailTaken = await User.findOne({ email });
+  if (emailTaken) {
     res.status(400);
     throw new Error('Email already registered');
+  }
+
+  // Check if email already has account
+  const usernameTaken = await User.findOne({ username });
+  if (usernameTaken) {
+    res.status(400);
+    throw new Error('Username already taken');
   }
 
   // Hash password and create user account
   const hashedPassword = await bcrypt.hash(password, 10);
   const user = await User.create({
-    firstName,
-    lastName,
+    username,
     email,
     password: hashedPassword,
+    profile_pic,
   });
 
   if (user) {
     res.status(201).json({
-      firstName,
-      lastName,
+      username,
       email,
       token: generateToken(user._id),
+      profile_pic,
     });
   } else {
     res.status(400);
@@ -64,20 +73,22 @@ exports.registerUser = async (req, res) => {
 
 // Loign user // POST
 exports.loginUser = async (req, res) => {
-  const { email, password } = req.body;
+  // const { username, email, password } = req.body;
+  const { password } = req.body;
+  const username = req.body.username.toLowerCase();
 
   // Check if all fields are filled out
-  if (!email || !password) {
+  // if (!(email || username) || !password) {
+  if (!username || !password) {
     res.status(400);
     throw new Error('fill in all fields');
   }
 
   // Log user in
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ username });
   if (user && (await bcrypt.compare(password, user.password))) {
     res.status(201).json({
-      firstName: user.firstName,
-      lastName: user.lastName,
+      username: user.username,
       email: user.email,
       token: generateToken(user._id),
     });
@@ -87,7 +98,7 @@ exports.loginUser = async (req, res) => {
   }
 };
 
-// Delete Goal // DELETE // ADMIN ONLY
+// Delete User // DELETE // ADMIN ONLY
 exports.deleteUser = async (req, res) => {
   const { id } = req.params;
   const user = await User.findById(id);
@@ -95,7 +106,19 @@ exports.deleteUser = async (req, res) => {
     res.status(400);
     throw new Error('User not found');
   } else {
-    res.status(200).json(`User ${user.name} deleted`);
-    await user.remove();
+    res.status(200).json(`User ${user.username} deleted`);
+    await user.deleteOne();
   }
 };
+
+// Delete ALL UserS // DELETE // VERY DANGEROUS
+// exports.deleteAllUsers = async (req, res) => {
+//   const users = await User.find();
+//   if (users.length < 1) {
+//     res.status(400);
+//     throw new Error('Users not found');
+//   } else {
+//     res.status(200).json('All Users purged');
+//     await User.deleteMany({});
+//   }
+// };

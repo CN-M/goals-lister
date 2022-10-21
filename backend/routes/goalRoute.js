@@ -2,19 +2,25 @@ const router = require('express').Router();
 
 const {
   showGoals,
+  showAllGoals,
   showOneGoal,
   createGoal,
   updateGoal,
   deleteGoal,
 } = require('../controllers/goalController');
 
-router.route('/')
-  .get(showGoals)
-  .post(createGoal);
+const { protect, guard } = require('../middleware/authMiddleware');
 
-router.route('/:id')
-  .get(showOneGoal)
-  .put(updateGoal)
-  .delete(deleteGoal);
+router.route('/')
+  .get(protect, showGoals)
+  .post(protect, createGoal);
+
+router.route('/:goalid')
+  .get(protect, showOneGoal)
+  .put(protect, updateGoal)
+  .delete(protect, deleteGoal);
+
+router.route('/all/goals')
+  .get(guard, showAllGoals);
 
 module.exports = router;

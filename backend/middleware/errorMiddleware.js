@@ -6,4 +6,6 @@ exports.errorHandler = (err, req, res, next) => {
     message: err.message,
     stack: NODE_ENV === 'production' ? null : err.stack,
   });
+
+  next(err);
 };

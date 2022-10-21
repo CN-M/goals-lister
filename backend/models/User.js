@@ -3,11 +3,7 @@ const Schema = mongoose.Schema;
 
 const UserSchema = new Schema(
   {
-    firstName: {
-      type: String,
-      required: true,
-    },
-    lastName: {
+    username: {
       type: String,
       required: true,
     },
@@ -20,14 +16,11 @@ const UserSchema = new Schema(
       type: String,
       required: true,
     },
+    profile_pic: {
+      type: String,
+    },
   },
   { timestamps: true },
-);
-
-UserSchema.virtual('username').get(
-  function() {
-    return `${this.firstName} ${this.lastName}`;
-  },
 );
 
 module.exports = mongoose.model('User', UserSchema);

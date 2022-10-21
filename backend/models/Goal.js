@@ -3,26 +3,17 @@ const Schema = mongoose.Schema;
 
 const GoalSchema = new Schema(
   {
-    name: {
+    text: {
       type: String,
       required: true,
     },
-    username: {
-      type: String,
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
       required: true,
+      ref: 'User',
     },
-    // complete: {
-    //   type: Boolean,
-    //   required: true,
-    // },
   },
   { timestamps: true },
-);
-
-GoalSchema.virtual('url').get(
-  function() {
-    return `${this.name}`;
-  },
 );
 
 module.exports = mongoose.model('Goal', GoalSchema);

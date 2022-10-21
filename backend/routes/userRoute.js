@@ -3,6 +3,8 @@ const {
   showUsers, registerUser, loginUser, deleteUser,
 } = require('../controllers/userController');
 
+const { protect, guard } = require('../middleware/authMiddleware');
+
 router.route('/register')
   .post(registerUser);
 
@@ -10,9 +12,9 @@ router.route('/login')
   .post(loginUser);
 
 router.route('/users')
-  .get(showUsers);
+  .get(guard, showUsers);
 
 router.route('/users/:id')
-  .delete(deleteUser);
+  .delete(guard, deleteUser);
 
 module.exports = router;
