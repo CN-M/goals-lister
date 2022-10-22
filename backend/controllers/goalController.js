@@ -9,9 +9,7 @@ exports.showAllGoals = async (req, res) => {
     res.status(400);
     throw new Error('No Goals to display');
   } else {
-    res.status(200).json({
-      goals,
-    });
+    res.status(200).json(goals);
   }
 };
 
